@@ -23,9 +23,9 @@ if __name__ == '__main__':
         'PDF_DIR': os.path.join('out','pdf'),
         'IMG_DIR': os.path.join('out','img')
     })
-    s1 = ATK_Step(name='Get Tweets', obj=Twitter_Api(), calls=['get_tweets'], args=[config])
-    s2 = ATK_Step(name='Get Slides', obj=Google_Api(), calls=['get_slides','export_slides'], args=[config]*2)
-    s3 = ATK_Step(name='Convert Slides', obj=File_Api(), calls=['convert_pdf_to_imgs'], args=[config])
+    s1 = ATK_Step(name='Get Tweets', obj=Twitter_Api(), calls=['get_tweets'], args=[config], prereqs=[])
+    s2 = ATK_Step(name='Get Slides', obj=Google_Api(), calls=['get_slides','export_slides'], args=[config]*2, prereqs=['Get Tweets'])
+    s3 = ATK_Step(name='Convert Slides', obj=File_Api(), calls=['convert_pdf_to_imgs'], args=[config], prereqs=['Get Slides'])
 
     pl.add_multiple_steps([s1,s2,s3])
     pl.run()

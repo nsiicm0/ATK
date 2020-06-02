@@ -10,7 +10,8 @@ class File_Api(Base.Base):
         pass
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
-    def convert_pdf_to_imgs(self, **kwargs) -> None:
+    def convert_pdf_to_imgs(self, **kwargs) -> List[str]:
+        image_names = []
         uid = kwargs['UID']
         source_path = os.path.join('.', kwargs['PDF_DIR'], f'{uid}.pdf')
         dest_path = os.path.join('.', kwargs['IMG_DIR'], uid)
@@ -20,4 +21,10 @@ class File_Api(Base.Base):
         with tempfile.TemporaryDirectory() as path:
             images_from_path = convert_from_path(source_path, dpi=500, output_folder=path)
             for i, page in enumerate(images_from_path):
-                page.save(os.path.join(dest_path, f'out_{str({i}).zfill(3)}.png'), 'PNG')
+                image_name = os.path.join(dest_path, f'out_{str({i}).zfill(3)}.png')
+                page.save(image_name, 'PNG')
+                image_names.append(image_name)
+
+    @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
+    def convert_imgs_to_movie(self, **kwargs) -> None:
+        pass
