@@ -1,6 +1,6 @@
 import unittest
 from ATK.Story import ATK_Story_Element, ATK_Story
-from ATK.lib.testing.ATK_Test_Case import ATK_Test_Case
+from test.ATK.lib.testing.ATK_Test_Case import ATK_Test_Case
 
 
 class Test_Story_Element(ATK_Test_Case):

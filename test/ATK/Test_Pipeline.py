@@ -1,6 +1,6 @@
 import unittest
 from ATK.Pipeline import ATK_Step, ATK_Pipeline, ATK_Pipeline_Dependency_Exception
-from ATK.lib.testing.ATK_Test_Case import ATK_Test_Case
+from test.ATK.lib.testing.ATK_Test_Case import ATK_Test_Case
 
 class Stub_Class(object):
 
