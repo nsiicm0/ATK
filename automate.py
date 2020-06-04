@@ -4,6 +4,7 @@ import string
 from ATK.Pipeline import *
 from ATK.File.Api import File_Api
 from ATK.Google.Api import Google_Api
+from ATK.Step import ATK_Step
 from ATK.Twitter.Api import Twitter_Api
 from ATK.Controller import ATK_Controller
 

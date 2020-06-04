@@ -1,19 +1,8 @@
-import pandas as pd
+from ATK.Step import ATK_Step
 from ATK.lib import Base
-from dataclasses import dataclass, field
-from typing import Callable, List, Dict
+from typing import List
 
-class ATK_Pipeline_Dependency_Exception(Exception):
-    pass
-
-@dataclass
-class ATK_Step():
-    name: str
-    obj: object
-    calls: List[str]
-    args: List[Dict]
-    prereqs: List[str] = field(default_factory=list)
-    completed: bool = False
+from ATK.lib.Exceptions import ATK_Pipeline_Dependency_Exception
 
 class ATK_Pipeline(Base.Base):
 

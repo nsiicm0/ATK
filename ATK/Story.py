@@ -1,16 +1,10 @@
 from typing import List
+
+from ATK.Story_Element import ATK_Story_Element
 from ATK.lib import Base
-from dataclasses import dataclass, field
 
-class ATK_Story_Invalid_Element_Passed_Exception(Exception):
-    pass
+from ATK.lib.Exceptions import ATK_Story_Invalid_Element_Passed_Exception
 
-@dataclass
-class ATK_Story_Element():
-    transcript: str
-    slide: int
-    file_path: str
-    is_cached: bool = False
 
 class ATK_Story(Base.Base):
 
