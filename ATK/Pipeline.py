@@ -32,7 +32,8 @@ class Pipeline(Base.Base):
                 for call, arg_dict in zip(step.calls, step.args):
                     func = getattr(step.obj, call)
                     func_args = arg_dict.copy()
-                    func_args['previous_results'] = self.execution_results[-1]['results'] if len(self.execution_results) > 0 else None
+                    if len(self.execution_results) > 0 and len(step.prereqs) > 0:
+                        func_args['dependent_results'] = list(filter(lambda res: res['step'] in step.prereqs, self.execution_results))
                     results = func(**func_args)
                     self.execution_results.append(dict({'step': step.name, 'results': results}))
                 step.completed = True

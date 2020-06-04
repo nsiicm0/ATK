@@ -14,7 +14,7 @@ class GoogleApi(Base.Base):
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
     def get_slides(self, **kwargs) -> None:
-        tweets = kwargs['previous_results']
+        tweets = kwargs['dependent_results']
         title = kwargs['title']
         self.log_as.info(f'Creating new slides with name {title}')
         self.output_file = drive.copy_file(self.slides_template_id, title)

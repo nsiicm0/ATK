@@ -7,9 +7,9 @@ from test.ATK.lib.testing.ATK_Test_Case import ATK_Test_Case
 class TestStory(ATK_Test_Case):
     def setUp(self):
         self.test_obj = Story()
-        self.test_element1 = StoryElement(transcript='Test 1', slide=1, next_slide=2, file_path='/dev/null', is_cached=False)
-        self.test_element2 = StoryElement(transcript='Test 2', slide=2, next_slide=3, file_path='/dev/null', is_cached=False)
-        self.test_element3 = StoryElement(transcript='Test 3', slide=3, next_slide=-1, file_path='/dev/null', is_cached=False)
+        self.test_element1 = StoryElement(transcript='Test 1', slide=1, next_slide=2, is_cached=False)
+        self.test_element2 = StoryElement(transcript='Test 2', slide=2, next_slide=3, is_cached=False)
+        self.test_element3 = StoryElement(transcript='Test 3', slide=3, next_slide=-1, is_cached=False)
 
     def test_creation(self):
         self.assertIsInstance(self.test_obj, Story)

@@ -22,9 +22,9 @@ class TwitterApi(Base.Base):
 
     #def get_tweets(self) -> List[tweepy.models.Status]:
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
-    def get_tweets(self, query:str, n:int=1, **kwargs) -> Dict:
+    def get_tweets(self, query:str, n:int=1, **kwargs) -> List[Dict]:
         # TODO: Change return type to Status model
         tweets = list()
         for i in range(n):
             tweets.append(Tweet(name=f'Test {str(i)}', handle=f'test_{str(i)}', text=f'Lorem ipsum {str(i)}', date='2020-05-29 20:00:00'))
-        return dict({'query':query, 'content':tweets})
+        return [dict({'query':query, 'content':tweets})] # TODO: Make sure list will be returned (for each topic one dict)
