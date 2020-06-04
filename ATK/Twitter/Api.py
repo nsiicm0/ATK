@@ -12,7 +12,7 @@ class Tweet():
     text: str
     date: str
 
-class Twitter_Api(Base.Base):
+class TwitterApi(Base.Base):
 
     def __init__(self) -> None:
         self.api_key = os.environ.get('TWITTER_API_KEY')
@@ -22,9 +22,9 @@ class Twitter_Api(Base.Base):
 
     #def get_tweets(self) -> List[tweepy.models.Status]:
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
-    def get_tweets(self, n:int=1, **kwargs) -> List[Dict]:
+    def get_tweets(self, query:str, n:int=1, **kwargs) -> Dict:
         # TODO: Change return type to Status model
         tweets = list()
         for i in range(n):
             tweets.append(Tweet(name=f'Test {str(i)}', handle=f'test_{str(i)}', text=f'Lorem ipsum {str(i)}', date='2020-05-29 20:00:00'))
-        return tweets
+        return dict({'query':query, 'content':tweets})

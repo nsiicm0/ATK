@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 
 
 @dataclass
-class ATK_Step():
+class Step():
     name: str
     obj: object
     calls: List[str]

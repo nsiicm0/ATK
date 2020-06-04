@@ -4,7 +4,7 @@ from ATK.lib import Base
 from typing import List, Dict
 from pdf2image import convert_from_path
 
-class File_Api(Base.Base):
+class FileApi(Base.Base):
 
     def __init__(self) -> None:
         pass

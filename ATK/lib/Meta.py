@@ -4,7 +4,7 @@ import json
 import logging.config
 from dotenv import load_dotenv
 
-class Meta_Class(type):
+class MetaClass(type):
     def __init__(cls, *args, **kwargs):
         super().__init__(*args)
         # Logging Setup
@@ -14,7 +14,7 @@ class Meta_Class(type):
 
         # Logger name derived accounting for inheritance for the bonus marks
         logger_name = '.'.join([c.__name__ for c in cls.mro()[-2::-1]])
-        Meta_Class.setup_logging(**kwargs)
+        MetaClass.setup_logging(**kwargs)
         setattr(cls, logger_attribute_name, logging.getLogger(logger_name))
 
         # Config Setup

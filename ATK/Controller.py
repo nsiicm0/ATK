@@ -1,10 +1,10 @@
 from ATK.lib import Base
-from ATK.Pipeline import ATK_Pipeline
+from ATK.Pipeline import Pipeline
 
-class ATK_Controller(Base.Base):
+class Controller(Base.Base):
 
     def __init__(self) -> None:
-        self.pipeline: ATK_Pipeline = ATK_Pipeline()
+        self.pipeline: Pipeline = Pipeline()
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
     def main(self):

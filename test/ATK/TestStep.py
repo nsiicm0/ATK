@@ -1,5 +1,5 @@
 import unittest
-from ATK.Step import ATK_Step
+from ATK.Step import Step
 from test.ATK.lib.Stub_Class import Stub_Class
 from test.ATK.lib.testing.ATK_Test_Case import ATK_Test_Case
 
@@ -13,12 +13,12 @@ class TestStep(ATK_Test_Case):
             'start': 0,
             'end': 9
         })
-        self.test_obj1 = ATK_Step(name='Get Upper', obj=Stub_Class(), calls=['to_upper'], args=[config], prereqs=[])
-        self.test_obj2 = ATK_Step(name='Get Part', obj=Stub_Class(), calls=['part'], args=[config], prereqs=[])
+        self.test_obj1 = Step(name='Get Upper', obj=Stub_Class(), calls=['to_upper'], args=[config], prereqs=[])
+        self.test_obj2 = Step(name='Get Part', obj=Stub_Class(), calls=['part'], args=[config], prereqs=[])
 
     def test_creation(self):
-        self.assertIsInstance(self.test_obj1, ATK_Step)
-        self.assertIsInstance(self.test_obj2, ATK_Step)
+        self.assertIsInstance(self.test_obj1, Step)
+        self.assertIsInstance(self.test_obj2, Step)
         self.assertNotEqual(self.test_obj1, self.test_obj2)
 
     def test_members(self):

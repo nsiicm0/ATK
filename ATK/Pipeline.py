@@ -1,22 +1,22 @@
-from ATK.Step import ATK_Step
+from ATK.Step import Step
 from ATK.lib import Base
 from typing import List
 
-from ATK.lib.Exceptions import ATK_Pipeline_Dependency_Exception
+from ATK.lib.Exceptions import PipelineDependencyException
 
-class ATK_Pipeline(Base.Base):
+class Pipeline(Base.Base):
 
     def __init__(self) -> None:
-        self.execution_steps: List[ATK_Step] = []
+        self.execution_steps: List[Step] = []
         self.execution_results: List[object] = []
         self.already_executed: List[str] = []
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
-    def add_step(self, step: ATK_Step) -> None:
+    def add_step(self, step: Step) -> None:
         self.execution_steps.append(step)
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
-    def add_multiple_steps(self, steps: List[ATK_Step]):
+    def add_multiple_steps(self, steps: List[Step]):
         self.execution_steps.extend(steps)
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
@@ -39,4 +39,4 @@ class ATK_Pipeline(Base.Base):
                 self.already_executed.append(step.name)
                 self.log_as.info(f'Completed step "{step.name}"')
             else:
-                raise ATK_Pipeline_Dependency_Exception('A prerequisit for this step was not met.')
+                raise PipelineDependencyException('A prerequisit for this step was not met.')

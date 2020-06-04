@@ -1,7 +1,8 @@
 from typing import Callable
 from ATK.lib import Meta
 
-class Base(metaclass=Meta.Meta_Class):
+
+class Base(metaclass=Meta.MetaClass):
     def __init__(self):
         pass
 

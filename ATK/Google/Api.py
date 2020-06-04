@@ -4,7 +4,7 @@ from typing import List, Dict
 import GoogleApiSupport.drive as drive
 import GoogleApiSupport.slides as slides
 
-class Google_Api(Base.Base):
+class GoogleApi(Base.Base):
 
     def __init__(self) -> None:
         self.slides_template_id = os.environ.get('SLIDES_TWEET_TEMPLATE')

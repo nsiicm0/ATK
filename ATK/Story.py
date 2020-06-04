@@ -1,12 +1,12 @@
 from typing import List
 
-from ATK.Story_Element import ATK_Story_Element
 from ATK.lib import Base
+from ATK.StoryElement import StoryElement
 
-from ATK.lib.Exceptions import ATK_Story_Invalid_Element_Passed_Exception
+from ATK.lib.Exceptions import StoryInvalidElementPassedException
 
 
-class ATK_Story(Base.Base):
+class Story(Base.Base):
 
     def __init__(self) -> None:
         self._lines = []
@@ -14,14 +14,18 @@ class ATK_Story(Base.Base):
     def get_lines(self):
         return self._lines
 
-    def add_line(self, element: ATK_Story_Element):
-        if isinstance(element, ATK_Story_Element):
+    def add_line(self, element: StoryElement) -> None:
+        if isinstance(element, StoryElement):
             self._lines.append(element)
         else:
-            raise ATK_Story_Invalid_Element_Passed_Exception('Invalid element passed. Element has to be of type ATK_Story_Element.')
+            raise StoryInvalidElementPassedException('Invalid element passed. Element has to be of type ATK_Story_Element.')
 
-    def add_lines(self, elements: List[ATK_Story_Element]):
-        if all(isinstance(element, ATK_Story_Element) for element in elements):
+    def add_lines(self, elements: List[StoryElement]) -> None:
+        if all(isinstance(element, StoryElement) for element in elements):
             self._lines.extend(elements)
         else:
-            raise ATK_Story_Invalid_Element_Passed_Exception('Invalid elements passed. Elements have to be of type ATK_Story_Element.')
+            raise StoryInvalidElementPassedException('Invalid elements passed. Elements have to be of type ATK_Story_Element.')
+
+    def tell_slide(self, slide: int) -> List[StoryElement]:
+        return list(filter(lambda line: line.slide == slide, self._lines))
+
