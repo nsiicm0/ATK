@@ -1,12 +1,13 @@
 import unittest
 
 from ATK.StoryElement import StoryElement
+from ATK.lib.Enums import SlideType
 from test.ATK.lib.testing.ATK_Test_Case import ATK_Test_Case
 
 
 class TestStoryElement(ATK_Test_Case):
     def setUp(self):
-        self.test_obj = StoryElement(transcript='Test', slide=1, next_slide=-1, is_cached=False)
+        self.test_obj = StoryElement(transcript='Test', slide=1, next_slide=-1, type=SlideType.CONTENT, is_cached=False)
 
     def test_creation(self):
         self.assertIsInstance(self.test_obj, StoryElement)
