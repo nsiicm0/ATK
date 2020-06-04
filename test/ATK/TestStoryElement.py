@@ -16,6 +16,9 @@ class TestStoryElement(ATK_Test_Case):
         actual_members = list(filter(lambda x: x[0] != '_', dir(self.test_obj)))
         self.assertTrue(all(mhm in actual_members for mhm in must_have_members))
 
+    def test_view(self):
+        self.assertEqual(self.test_obj.view(), 'Test')
+
 
 if __name__ == '__main__':
     unittest.main()

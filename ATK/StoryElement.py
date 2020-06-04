@@ -8,3 +8,6 @@ class StoryElement():
     next_slide: int
     file_path: str
     is_cached: bool = False
+
+    def view(self) -> str:
+        return self.transcript
