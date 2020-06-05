@@ -34,5 +34,5 @@ if __name__ == '__main__':
     s3 = Step(name=StepName.GET_SLIDES, obj=GoogleApi(), calls=['get_slides', 'export_slides'], args=[config] * 2, prereqs=[StepName.GET_TWEETS])
     s4 = Step(name=StepName.CONVERT_SLIDES, obj=FileApi(), calls=['convert_pdf_to_imgs'], args=[config], prereqs=[StepName.GET_TWEETS])
 
-    pl.add_multiple_steps([s1, s2])
+    pl.add_multiple_steps([s1, s2, s3])
     pl.run()
