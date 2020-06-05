@@ -43,8 +43,7 @@ class StoryDeveloper(Base.Base):
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
     def develop(self, **kwargs) -> Story:
-        data = kwargs['dependent_results']
-        twitter_content = list(map(lambda x: x['results'], filter(lambda x: x['step'] == StepName.GET_TWEETS, data)))[0]
+        twitter_content = list(filter(lambda x: x['step'] == f'{StepName.GET_TWEETS.value}_get_tweets' , kwargs['dependent_results']))[0]['results']
         self.start()
         for content in twitter_content:
             self.subtitle(topic=content['query'])

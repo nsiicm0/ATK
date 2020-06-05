@@ -27,12 +27,15 @@ if __name__ == '__main__':
         'query': '#Test_query',
         'UID': f'{UID}',
         'PDF_DIR': os.path.join('out','pdf'),
-        'IMG_DIR': os.path.join('out','img')
+        'IMG_DIR': os.path.join('out','img'),
+        'SND_DIR': os.path.join('out','snd'),
+        'MOV_DIR': os.path.join('out','mov')
     })
     s1 = Step(name=StepName.GET_TWEETS, obj=TwitterApi(), calls=['get_tweets'], args=[config], prereqs=[])
     s2 = Step(name=StepName.DEVELOP_STORY, obj=StoryDeveloper(), calls=['develop'], args=[config], prereqs=[StepName.GET_TWEETS])
     s3 = Step(name=StepName.GET_SLIDES, obj=GoogleApi(), calls=['get_slides', 'export_slides'], args=[config] * 2, prereqs=[StepName.GET_TWEETS])
-    s4 = Step(name=StepName.CONVERT_SLIDES, obj=FileApi(), calls=['convert_pdf_to_imgs'], args=[config], prereqs=[StepName.GET_TWEETS])
+    s4 = Step(name=StepName.CONVERT_SLIDES, obj=FileApi(), calls=['convert_pdf_to_imgs','convert_imgs_to_movie'], args=[config] * 2, prereqs=[StepName.GET_TWEETS,StepName.DEVELOP_STORY])
+    s5 = Step(name=StepName.GET_TTS, obj=GoogleApi(), calls=['convert_tts'], args=[config] * 2, prereqs=[StepName.CONVERT_SLIDES, StepName.DEVELOP_STORY])
 
-    pl.add_multiple_steps([s1, s2, s3])
+    pl.add_multiple_steps([s1, s2, s3, s4, s5])
     pl.run()

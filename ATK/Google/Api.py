@@ -1,6 +1,7 @@
 import os
 from ATK.lib import Base
 from typing import List, Dict
+from google.cloud import texttospeech
 import GoogleApiSupport.drive as drive
 import GoogleApiSupport.slides as slides
 
@@ -16,7 +17,7 @@ class GoogleApi(Base.Base):
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
     def get_slides(self, **kwargs) -> None:
-        tweets = list(filter(lambda x: x['step'] == StepName.GET_TWEETS , kwargs['dependent_results']))[0]['results']
+        tweets = list(filter(lambda x: x['step'] == f'{StepName.GET_TWEETS.value}_get_tweets' , kwargs['dependent_results']))[0]['results']
         title = kwargs['title']
         self.log_as.info(f'Creating new slides with name {title}')
         self.output_file = drive.copy_file(self.slides_template_id, title)
@@ -77,3 +78,41 @@ class GoogleApi(Base.Base):
         dest_file = os.path.join(dest_path, f'{uid}.pdf')
         drive.download_file(self.output_file, destination_path=dest_file, mime_type='application/pdf')
 
+    @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
+    def convert_tts(self, **kwargs) -> None:
+        uid = kwargs['UID']
+        dest_path = os.path.join('.', kwargs['SND_DIR'], uid)
+        res = kwargs['dependent_results']
+        story = list(filter(lambda x: x['step'] == f'{StepName.DEVELOP_STORY.value}_develop', kwargs['dependent_results']))[0]['results']
+        slide_images = list(filter(lambda x: x['step'] == f'{StepName.CONVERT_SLIDES.value}_convert_pdf_to_imgs', kwargs['dependent_results']))[0]['results']
+
+        # prepare target dir
+        if not os.path.isdir(dest_path):
+            os.makedirs(dest_path)
+
+        # Instantiates a client
+        client = texttospeech.TextToSpeechClient()
+
+        for slide, path in slide_images.items():
+            slide_content = story.tell_slide(slide)
+            for i, content in enumerate(slide_content):
+                # Set the text input to be synthesized
+                synthesis_input = texttospeech.SynthesisInput(text=content.view())
+                # Build the voice request
+                voice = texttospeech.VoiceSelectionParams(
+                    language_code='en-US',
+                    name="en-US-Wavenet-D",
+                    ssml_gender=texttospeech.SsmlVoiceGender.MALE)
+                # Select the type of audio file you want returned
+                audio_config = texttospeech.AudioConfig(
+                    speaking_rate=0.9,
+                    audio_encoding=texttospeech.AudioEncoding.MP3)
+                # Perform the text-to-speech request on the text input with the selected
+                # voice parameters and audio file type
+                response = client.synthesize_speech(input=synthesis_input, voice=voice, audio_config=audio_config)
+                # The response's audio_content is binary.
+                target_name = os.path.join(dest_path, f'out_{str(slide).zfill(3)}_{str(i)}.mp3')
+                with open(target_name, 'wb') as out:
+                    # Write the response to the output file.
+                    out.write(response.audio_content)
+                    self.log_as.info(f'Audio content written to file: {target_name}')
