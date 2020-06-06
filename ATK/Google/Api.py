@@ -35,7 +35,10 @@ class GoogleApi(Base.Base):
         self.log_as.info(f'Adding title slide')
         response = slides.duplicate_object(self.output_file, SLIDE_HANDLES[SlideType.TITLE.value]['objectId'])
         TITLE_SLIDE_ID = response['replies'][0]['duplicateObject']['objectId']
-
+        slides.batch_text_replace({
+            'TITLE': title
+        }, self.output_file, [TITLE_SLIDE_ID])
+        twitter_users = []
         for obj in tweets[::-1]:
             # add trend slide
             self.log_as.info(f'Adding trend slide')
@@ -56,6 +59,7 @@ class GoogleApi(Base.Base):
                     'TEXT': tweet.text,
                     'DATE': tweet.date
                 }, self.output_file, [TWEET_SLIDE_ID])
+                twitter_users.append(f'@{tweet.handle}')
 
             # Move content template slide behind subtitle template slide
             self.log_as.info(f'Rearrange content template slide')
@@ -64,6 +68,10 @@ class GoogleApi(Base.Base):
         self.log_as.info(f'Adding end slide')
         response = slides.duplicate_object(self.output_file, SLIDE_HANDLES[SlideType.END.value]['objectId'])
         END_SLIDE_ID = response['replies'][0]['duplicateObject']['objectId']
+        credits = f'Credits to Twitter users: {", ".join(list(set(twitter_users[::-1])))}'
+        slides.batch_text_replace({
+            'CREDITS': credits
+        }, self.output_file, [END_SLIDE_ID])
 
         self.log_as.info(f'Removing template slides')
         for template_slide in SLIDE_HANDLES.values():

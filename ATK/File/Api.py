@@ -36,7 +36,7 @@ class FileApi(Base.Base):
     def convert_imgs_to_movie(self, **kwargs) -> None:
         uid = kwargs['UID']
         story = list(filter(lambda x: x['step'] == f'{StepName.DEVELOP_STORY.value}_develop', kwargs['dependent_results']))[0]['results']
-        slide_images = dict({0: './out/img/NFVl62sA/out_000.png', 1: './out/img/NFVl62sA/out_001.png',
+        '''slide_images = dict({0: './out/img/NFVl62sA/out_000.png', 1: './out/img/NFVl62sA/out_001.png',
                              2: './out/img/NFVl62sA/out_002.png', 3: './out/img/NFVl62sA/out_003.png',
                              4: './out/img/NFVl62sA/out_004.png', 5: './out/img/NFVl62sA/out_005.png',
                              6: './out/img/NFVl62sA/out_006.png', 7: './out/img/NFVl62sA/out_007.png'})
@@ -48,6 +48,9 @@ class FileApi(Base.Base):
                             5: ['./out/snd/NFVl62sA/out_005_0.mp3'],
                             6: ['./out/snd/NFVl62sA/out_006_0.mp3'],
                             7: ['./out/snd/NFVl62sA/out_007_0.mp3']})
+                            '''
+        slide_images =list(filter(lambda x: x['step'] == f'{StepName.CONVERT_SLIDES.value}_convert_pdf_to_imgs', kwargs['dependent_results']))[0]['results']
+        slide_sounds = list(filter(lambda x: x['step'] == f'{StepName.GET_TTS.value}_convert_tts', kwargs['dependent_results']))[0]['results']
         sld_clips = []
         t = 0
         for (imgkey, imgval), (sndkey, sndvals) in zip(slide_images.items(), slide_sounds.items()):
@@ -62,7 +65,7 @@ class FileApi(Base.Base):
             sld_audio = mpy.concatenate_audioclips(audio_clips)
             sld = (mpy.ImageClip(imgval)
                  .set_duration(sld_audio.duration)  # using the fx library to effortlessly transform the video clip # .on_color(size=DIM, color=dark_grey)
-                 .set_fps(5)
+                 .set_fps(5) # if we want to use transition we would need to increase fps to > 24
                  .set_audio(sld_audio))
             sld_clips.append(sld.set_start(t))
             # account for current compound clip length
