@@ -17,6 +17,7 @@ class GoogleApi(Base.Base):
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
     def get_slides(self, **kwargs) -> None:
+        # TODO: Add profile picture
         tweets = list(filter(lambda x: x['step'] == f'{StepName.GET_TWEETS.value}_get_tweets' , kwargs['dependent_results']))[0]['results']
         title = kwargs['title']
         self.log_as.info(f'Creating new slides with name {title}')
@@ -79,10 +80,9 @@ class GoogleApi(Base.Base):
         drive.download_file(self.output_file, destination_path=dest_file, mime_type='application/pdf')
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
-    def convert_tts(self, **kwargs) -> None:
+    def convert_tts(self, **kwargs) -> Dict:
         uid = kwargs['UID']
         dest_path = os.path.join('.', kwargs['SND_DIR'], uid)
-        res = kwargs['dependent_results']
         story = list(filter(lambda x: x['step'] == f'{StepName.DEVELOP_STORY.value}_develop', kwargs['dependent_results']))[0]['results']
         slide_images = list(filter(lambda x: x['step'] == f'{StepName.CONVERT_SLIDES.value}_convert_pdf_to_imgs', kwargs['dependent_results']))[0]['results']
 
@@ -92,9 +92,10 @@ class GoogleApi(Base.Base):
 
         # Instantiates a client
         client = texttospeech.TextToSpeechClient()
-
+        audio_info = dict()
         for slide, path in slide_images.items():
             slide_content = story.tell_slide(slide)
+            audio_files = []
             for i, content in enumerate(slide_content):
                 # Set the text input to be synthesized
                 synthesis_input = texttospeech.SynthesisInput(text=content.view())
@@ -116,3 +117,6 @@ class GoogleApi(Base.Base):
                     # Write the response to the output file.
                     out.write(response.audio_content)
                     self.log_as.info(f'Audio content written to file: {target_name}')
+                audio_files.append(target_name)
+            audio_info[slide] = audio_files
+        return audio_info
