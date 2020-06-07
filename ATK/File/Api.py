@@ -78,4 +78,4 @@ class FileApi(Base.Base):
             os.makedirs(dest_path)
 
         video_path = os.path.join(dest_path, f'{uid}.mp4')
-        video.write_videofile(video_path, threads=4)
+        video.write_videofile(video_path, threads=4, logger=None)
