@@ -24,8 +24,8 @@ if __name__ == '__main__':
     config = dict({
         'title': f'Test Run #{UID}',
         'country': 23424977, # US tweets for now
-        'n_topics': 5,
-        'n_tweets_per_topic': 10,
+        'n_topics': 1,
+        'n_tweets_per_topic': 5,
         'UID': f'{UID}',
         'PDF_DIR': os.path.join('out','pdf'),
         'IMG_DIR': os.path.join('out','img'),
@@ -39,5 +39,5 @@ if __name__ == '__main__':
     s5 = Step(name=StepName.GET_TTS, obj=GoogleApi(), calls=['convert_tts'], args=[config] * 2, prereqs=[StepName.CONVERT_SLIDES, StepName.DEVELOP_STORY])
     s6 = Step(name=StepName.STITCH_MOVIE, obj=FileApi(), calls=['convert_imgs_to_movie'], args=[config] * 3, prereqs=[StepName.DEVELOP_STORY, StepName.CONVERT_SLIDES, StepName.GET_TTS])
 
-    pl.add_multiple_steps([s1])
+    pl.add_multiple_steps([s1,s2,s3,s4])
     pl.run()

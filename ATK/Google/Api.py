@@ -59,6 +59,19 @@ class GoogleApi(Base.Base):
                     'TEXT': tweet.text,
                     'DATE': tweet.date
                 }, self.output_file, [TWEET_SLIDE_ID])
+                #we have to build a custom request in order to replace the image on just the current slide
+                requests = [
+                    {
+                        "replaceAllShapesWithImage": {
+                            "imageUrl": tweet.profile_image_url,
+                            "replaceMethod": "CENTER_INSIDE",
+                            "containsText": {
+                                "text": "{{IMG}}",
+                            },
+                            "pageObjectIds": [TWEET_SLIDE_ID]
+                        }
+                    }]
+                slides.execute_batch_update(requests, self.output_file)
                 twitter_users.append(f'@{tweet.handle}')
 
             # Move content template slide behind subtitle template slide

@@ -1,7 +1,7 @@
 import os
 import re
 import tweepy
-from datetime import datetime
+import codecs
 from ATK.lib import Base
 from typing import List, Dict
 from dataclasses import dataclass
@@ -43,11 +43,10 @@ class TwitterApi(Base.Base):
             trend_data['query'] = trend['name']
             search_results = self.api.search(q=trend['query'], lang='en', result_type='popular')
             tweets = []
-            tweepy.Status
             for j, status in enumerate(search_results):
-                if j >= n_topics:
+                if j >= n_tweets_per_topic:
                     break
-                tweets.append(Tweet(name=status.user.name, handle=status.user.screen_name, text=(status.text).replace('\n',''), date=status.created_at.strftime('%b %d %Y, %I:%M:%S %p UTC'), profile_image_url=status.user.profile_image_url_https))
+                tweets.append(Tweet(name=status.user.name, handle=status.user.screen_name, text=status.text, date=status.created_at.strftime('%b %d %Y, %I:%M:%S %p UTC'), profile_image_url=status.user.profile_image_url_https))
             trend_data['content'] = tweets
             results.append(trend_data)
 
