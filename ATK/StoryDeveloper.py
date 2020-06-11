@@ -29,7 +29,7 @@ class StoryDeveloper(Base.Base):
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
     def subtitle(self, topic:str) -> None:
-        text = f'We will now cover the trending topic of {topic}.'
+        text = f'We will now cover the trending topic "{topic}".'
         self.story.add_line(self._get_StoryElement(text=text, is_cached=False, type=SlideType.SUBTITLE))
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
@@ -49,6 +49,6 @@ class StoryDeveloper(Base.Base):
             self.subtitle(topic=content['query'])
             for element in content['content']:
                 text = f'User @{element.handle} posted: "{element.text}"'
-                self.content(content=text)
+                self.content(content=text.replace('&amp;',''))
         self.end()
         return self.story
