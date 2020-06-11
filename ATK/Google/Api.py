@@ -4,7 +4,6 @@ from typing import List, Dict
 from google.cloud import texttospeech
 import GoogleApiSupport.drive as drive
 import GoogleApiSupport.slides as slides
-
 from ATK.lib.Enums import SlideType, StepName
 
 
@@ -13,13 +12,14 @@ class GoogleApi(Base.Base):
     def __init__(self) -> None:
         self.slides_template_id = os.environ.get('SLIDES_TWEET_TEMPLATE')
         self.slides_trendy_folder_id = os.environ.get('SLIDES_TRENDY_FOLDER_ID')
+        self.slides_upload_folder_id = os.environ.get('SLIDES_TWEETS_UPLOAD_FOLDER_ID')
         self.output_file = None
 
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
     def get_slides(self, **kwargs) -> None:
-        # TODO: Add profile picture
-        tweets = list(filter(lambda x: x['step'] == f'{StepName.GET_TWEETS.value}_get_tweets' , kwargs['dependent_results']))[0]['results']
+        tweets = list(filter(lambda x: x['step'] == f'{StepName.RENDER_TWEETS.value}_render_tweets' , kwargs['dependent_results']))[0]['results']
         title = kwargs['title']
+
         self.log_as.info(f'Creating new slides with name {title}')
         self.output_file = drive.copy_file(self.slides_template_id, title)
         self.log_as.info(f'Move to appropriate location')
@@ -50,23 +50,22 @@ class GoogleApi(Base.Base):
 
             content = obj['content']
             for tweet in content[::-1]:
+                self.log_as.info(f'Upload tweet')
+                upload_response = drive.upload_image_to_drive(image_name=os.path.basename(tweet.render_path),
+                                                              image_file_path=tweet.render_path,
+                                                              folder_destination_id=self.slides_upload_folder_id)
+
                 self.log_as.info(f'Adding tweet slide')
                 response = slides.duplicate_object(self.output_file, SLIDE_HANDLES[SlideType.CONTENT.value]['objectId'])
                 TWEET_SLIDE_ID = response['replies'][0]['duplicateObject']['objectId']  # this is already the objectId
-                slides.batch_text_replace({
-                    'NAME': tweet.name,
-                    'USERNAME': tweet.handle,
-                    'TEXT': tweet.text,
-                    'DATE': tweet.date
-                }, self.output_file, [TWEET_SLIDE_ID])
                 #we have to build a custom request in order to replace the image on just the current slide
                 requests = [
                     {
                         "replaceAllShapesWithImage": {
-                            "imageUrl": tweet.profile_image_url,
-                            "replaceMethod": "CENTER_INSIDE",
+                            "imageUrl": upload_response['image_url'],
+                            "imageReplaceMethod": "CENTER_INSIDE",
                             "containsText": {
-                                "text": "{{IMG}}",
+                                "text": "{{TWEET}}",
                             },
                             "pageObjectIds": [TWEET_SLIDE_ID]
                         }

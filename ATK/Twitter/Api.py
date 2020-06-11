@@ -8,12 +8,14 @@ from dataclasses import dataclass
 
 @dataclass
 class Tweet():
-    # TODO: remove and replace with Tweepy model
     name: str
     handle: str
     text: str
     date: str
     profile_image_url: str
+    oembed: Dict
+    render_path: str
+    id: str
 
 class TwitterApi(Base.Base):
 
@@ -35,6 +37,8 @@ class TwitterApi(Base.Base):
         # we will focus on trends that only contain english characters
         reg = re.compile('^[A-z0-9\.#\_]+$')
         for i, trend in enumerate(trends):
+            # TODO: For some reason it prematurely stops
+            # TODO: Clean tweets from URLs and hashtags
             if i >= n_topics:
                 break
             trend_data = dict()
@@ -46,7 +50,9 @@ class TwitterApi(Base.Base):
             for j, status in enumerate(search_results):
                 if j >= n_tweets_per_topic:
                     break
-                tweets.append(Tweet(name=status.user.name, handle=status.user.screen_name, text=status.text, date=status.created_at.strftime('%b %d %Y, %I:%M:%S %p UTC'), profile_image_url=status.user.profile_image_url_https))
+                # get oembed info
+                oembed = self.api.get_oembed(id=status.id_str, hide_media=True, hide_thread=True, lang='en')
+                tweets.append(Tweet(name=status.user.name, handle=status.user.screen_name, text=status.text, date=status.created_at.strftime('%b %d %Y, %I:%M:%S %p UTC'), profile_image_url=status.user.profile_image_url_https, oembed=oembed, render_path='', id=status.id_str))
             trend_data['content'] = tweets
             results.append(trend_data)
 

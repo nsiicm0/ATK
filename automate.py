@@ -1,6 +1,7 @@
 import os
 import random
 import string
+from datetime import date
 
 from ATK.Pipeline import Pipeline
 from ATK.File.Api import FileApi
@@ -21,23 +22,28 @@ if __name__ == '__main__':
 
     pl = Pipeline()
     UID = get_random_alphanumeric_string()
+    today = date.today()
+    date_string = today.strftime("%b %m, %Y")
     config = dict({
-        'title': f'Test Run #{UID}',
+        'title': f'Trending Tweets for {date_string}',
         'country': 23424977, # US tweets for now
-        'n_topics': 1,
-        'n_tweets_per_topic': 5,
+        'n_topics': 5,
+        'n_tweets_per_topic': 10,
         'UID': f'{UID}',
         'PDF_DIR': os.path.join('out','pdf'),
         'IMG_DIR': os.path.join('out','img'),
+        'RDR_DIR': os.path.join('out','rdr'),
         'SND_DIR': os.path.join('out','snd'),
         'MOV_DIR': os.path.join('out','mov')
     })
+    print(config['UID'])
     s1 = Step(name=StepName.GET_TWEETS, obj=TwitterApi(), calls=['get_tweets'], args=[config], prereqs=[])
-    s2 = Step(name=StepName.DEVELOP_STORY, obj=StoryDeveloper(), calls=['develop'], args=[config], prereqs=[StepName.GET_TWEETS])
-    s3 = Step(name=StepName.GET_SLIDES, obj=GoogleApi(), calls=['get_slides', 'export_slides'], args=[config] * 2, prereqs=[StepName.GET_TWEETS])
-    s4 = Step(name=StepName.CONVERT_SLIDES, obj=FileApi(), calls=['convert_pdf_to_imgs'], args=[config], prereqs=[StepName.GET_TWEETS,StepName.DEVELOP_STORY])
-    s5 = Step(name=StepName.GET_TTS, obj=GoogleApi(), calls=['convert_tts'], args=[config] * 2, prereqs=[StepName.CONVERT_SLIDES, StepName.DEVELOP_STORY])
-    s6 = Step(name=StepName.STITCH_MOVIE, obj=FileApi(), calls=['convert_imgs_to_movie'], args=[config] * 3, prereqs=[StepName.DEVELOP_STORY, StepName.CONVERT_SLIDES, StepName.GET_TTS])
+    s2 = Step(name=StepName.RENDER_TWEETS, obj=FileApi(), calls=['render_tweets'], args=[config], prereqs=[StepName.GET_TWEETS])
+    s3 = Step(name=StepName.DEVELOP_STORY, obj=StoryDeveloper(), calls=['develop'], args=[config], prereqs=[StepName.RENDER_TWEETS])
+    s4 = Step(name=StepName.GET_SLIDES, obj=GoogleApi(), calls=['get_slides', 'export_slides'], args=[config] * 2, prereqs=[StepName.RENDER_TWEETS])
+    s5 = Step(name=StepName.CONVERT_SLIDES, obj=FileApi(), calls=['convert_pdf_to_imgs'], args=[config], prereqs=[StepName.GET_TWEETS,StepName.DEVELOP_STORY])
+    s6 = Step(name=StepName.GET_TTS, obj=GoogleApi(), calls=['convert_tts'], args=[config] * 2, prereqs=[StepName.CONVERT_SLIDES, StepName.DEVELOP_STORY])
+    s7 = Step(name=StepName.STITCH_MOVIE, obj=FileApi(), calls=['convert_imgs_to_movie'], args=[config] * 3, prereqs=[StepName.DEVELOP_STORY, StepName.CONVERT_SLIDES, StepName.GET_TTS])
 
-    pl.add_multiple_steps([s1,s2,s3,s4])
+    pl.add_multiple_steps([s1,s2,s3,s4,s5,s6,s7])
     pl.run()
