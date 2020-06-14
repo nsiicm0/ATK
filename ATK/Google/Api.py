@@ -21,8 +21,8 @@ class GoogleApi(Base.Base):
             file = self.drive_service.files().create(body=file_metadata, media_body = media, fields = 'id').execute()
             file_id = file.get('id')
             self.drive_service.permissions().create(fileId=file_id,body={"role": "reader", "type": "anyone", "withLink": True}).execute()
-            url = f'https://drive.google.com/uc?id={file_id}'
-            return dict({'id':file_id, 'url':url})
+            response = self.drive_service.files().get(fileId=file_id, fields='webContentLink').execute()
+            return dict({'id':file_id, 'url':response['webContentLink']})
 
     def __init__(self) -> None:
         self.slides_template_id = os.environ.get('SLIDES_TWEET_TEMPLATE')
