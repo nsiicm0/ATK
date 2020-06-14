@@ -18,10 +18,11 @@ class GoogleApi(Base.Base):
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
     def get_slides(self, **kwargs) -> None:
         tweets = list(filter(lambda x: x['step'] == f'{StepName.RENDER_TWEETS.value}_render_tweets' , kwargs['dependent_results']))[0]['results']
-        title = f"{kwargs['title']} - {kwargs['UID']} "
+        name = f"{kwargs['title']} - {kwargs['UID']} "
+        title = f"{kwargs['title']}"
 
         self.log_as.info(f'Creating new slides with name {title}')
-        self.output_file = drive.copy_file(self.slides_template_id, title)
+        self.output_file = drive.copy_file(self.slides_template_id, name)
         self.log_as.info(f'Move to appropriate location')
         drive.move_file(self.output_file, self.slides_trendy_folder_id)
         self.log_as.info(f'Getting handle of template slides')
