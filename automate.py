@@ -19,7 +19,7 @@ def get_random_alphanumeric_string(stringLength=8):
 if __name__ == '__main__':
     UID = get_random_alphanumeric_string()
     today = date.today()
-    date_string = today.strftime("%b %m, %Y")
+    date_string = today.strftime("%b %d, %Y")
     config = dict({
         'title': f'Trending Tweets for {date_string}',
         'country': 23424977,  # US tweets for now
