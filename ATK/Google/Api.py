@@ -15,6 +15,16 @@ class GoogleApi(Base.Base):
         def __init__(self):
             self.drive_service = gs.get_service("drive")
 
+        def create_folder(self, folder_name: str, target_folder_id: str):
+            file_metadata = {
+                'name': folder_name,
+                'mimeType': 'application/vnd.google-apps.folder',
+                'parents': [target_folder_id]
+            }
+            file = self.drive_service.files().create(body=file_metadata, fields='id').execute()
+            return file.get('id')
+
+
         def upload_data(self, file_path: str, target_folder: str, mime_type: str = 'image/png') -> Dict:
             file_metadata = {'name': os.path.basename(file_path), "parents": [target_folder]}
             media = MediaFileUpload(file_path, mimetype=mime_type)
@@ -41,6 +51,9 @@ class GoogleApi(Base.Base):
         self.output_file = drive.copy_file(self.slides_template_id, name)
         self.log_as.info(f'Move to appropriate location')
         drive.move_file(self.output_file, self.slides_trendy_folder_id)
+        self.log_as.info(f'Creating upload folder')
+        upload_folder_id = self.helper.create_folder(folder_name=kwargs['UID'],target_folder_id=self.slides_upload_folder_id)
+
         self.log_as.info(f'Getting handle of template slides')
         slds = slides.get_presentation_slides(self.output_file)
         SLIDE_HANDLES = dict()
@@ -68,7 +81,7 @@ class GoogleApi(Base.Base):
             content = obj['content']
             for tweet in content[::-1]:
                 self.log_as.info(f'Upload tweet {tweet.id}')
-                upload_response = self.helper.upload_data(file_path=tweet.render_path,target_folder=self.slides_upload_folder_id)
+                upload_response = self.helper.upload_data(file_path=tweet.render_path,target_folder=upload_folder_id)
                 time.sleep(2)
                 self.log_as.info(f'Adding tweet to slide')
                 response = slides.duplicate_object(self.output_file, SLIDE_HANDLES[SlideType.CONTENT.value]['objectId'])
