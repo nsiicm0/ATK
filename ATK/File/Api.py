@@ -68,20 +68,6 @@ class FileApi(Base.Base):
     @Base.wrap(pre=Base.entering, post=Base.exiting, guard=False)
     def convert_imgs_to_movie(self, **kwargs) -> None:
         uid = kwargs['UID']
-        story = list(filter(lambda x: x['step'] == f'{StepName.DEVELOP_STORY.value}_develop', kwargs['dependent_results']))[0]['results']
-        '''slide_images = dict({0: './out/img/NFVl62sA/out_000.png', 1: './out/img/NFVl62sA/out_001.png',
-                             2: './out/img/NFVl62sA/out_002.png', 3: './out/img/NFVl62sA/out_003.png',
-                             4: './out/img/NFVl62sA/out_004.png', 5: './out/img/NFVl62sA/out_005.png',
-                             6: './out/img/NFVl62sA/out_006.png', 7: './out/img/NFVl62sA/out_007.png'})
-        slide_sounds = dict({0: ['./out/snd/NFVl62sA/out_000_0.mp3'],
-                            1: ['./out/snd/NFVl62sA/out_001_0.mp3'],
-                            2: ['./out/snd/NFVl62sA/out_002_0.mp3'],
-                            3: ['./out/snd/NFVl62sA/out_003_0.mp3'],
-                            4: ['./out/snd/NFVl62sA/out_004_0.mp3'],
-                            5: ['./out/snd/NFVl62sA/out_005_0.mp3'],
-                            6: ['./out/snd/NFVl62sA/out_006_0.mp3'],
-                            7: ['./out/snd/NFVl62sA/out_007_0.mp3']})
-                            '''
         slide_images =list(filter(lambda x: x['step'] == f'{StepName.CONVERT_SLIDES.value}_convert_pdf_to_imgs', kwargs['dependent_results']))[0]['results']
         slide_sounds = list(filter(lambda x: x['step'] == f'{StepName.GET_TTS.value}_convert_tts', kwargs['dependent_results']))[0]['results']
         sld_clips = []

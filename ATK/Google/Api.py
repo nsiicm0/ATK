@@ -22,17 +22,18 @@ class GoogleApi(Base.Base):
                 'parents': [target_folder_id]
             }
             file = self.drive_service.files().create(body=file_metadata, fields='id').execute()
-            return file.get('id')
-
+            file_id = file.get('id')
+            self.drive_service.permissions().create(fileId=file_id, body={"role": "reader", "type": "anyone", "withLink": True}).execute()
+            return file_id
 
         def upload_data(self, file_path: str, target_folder: str, mime_type: str = 'image/png') -> Dict:
-            file_metadata = {'name': os.path.basename(file_path), "parents": [target_folder]}
-            media = MediaFileUpload(file_path, mimetype=mime_type)
-            file = self.drive_service.files().create(body=file_metadata, media_body = media, fields = 'id').execute()
-            file_id = file.get('id')
-            self.drive_service.permissions().create(fileId=file_id,body={"role": "reader", "type": "anyone", "withLink": True}).execute()
-            response = self.drive_service.files().get(fileId=file_id, fields='webContentLink').execute()
-            return dict({'id':file_id, 'url':response['webContentLink']})
+                file_metadata = {'name': os.path.basename(file_path), "parents": [target_folder]}
+                media = MediaFileUpload(file_path, mimetype=mime_type)
+                file = self.drive_service.files().create(body=file_metadata, media_body = media, fields = 'id').execute()
+                file_id = file.get('id')
+                self.drive_service.permissions().create(fileId=file_id,body={"role": "reader", "type": "anyone", "withLink": True}).execute()
+                response = self.drive_service.files().get(fileId=file_id, fields='webContentLink').execute()
+                return dict({'id':file_id, 'url':response['webContentLink']})
 
     def __init__(self) -> None:
         self.slides_template_id = os.environ.get('SLIDES_TWEET_TEMPLATE')
